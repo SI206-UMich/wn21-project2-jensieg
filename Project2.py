@@ -15,9 +15,16 @@ def get_titles_from_search_results(filename):
 
     [('Book title 1', 'Author 1'), ('Book title 2', 'Author 2')...]
     """
-
-    pass
-
+    dct = {}
+    soup = BeautifulSoup('search_results.htm', 'html.parser')
+    with soup.findall('a') as stuff:
+        title= stuff.get('title')
+        tnone= title.strip('\n')
+        author = stuff.get('name') #FIX THIS LINE
+        anone = author.strip('\n')
+        dct[tnone] = anone
+        tuples = dct.items()
+    return tuples
 
 def get_search_links():
     """
