@@ -81,8 +81,9 @@ def get_book_summary(book_url):
     title = book.find('h1', id = 'bookTitle').text.strip('\n')
     t_final = title.lstrip()
     author = book.find('span', itemprop = 'name').text
-    pages = book.find('span', itemprop = 'numberOfPages').text.strip('\n')
-    final = (t_final, author, pages)
+    pages = book.find('span', itemprop = 'numberOfPages').text.strip(' pages')
+    p_final= pages.strip('\n')
+    final = (t_final, author, int(p_final))
     return final
 
 
@@ -203,9 +204,9 @@ class TestCases(unittest.TestCase):
         for s in summaries:
             self.assertIs(type(s[0]), str)
             self.assertIs(type(s[1]), str)
-            #self.assertIs(type(s[2]), int)
+            self.assertIs(type(s[2]), int)
         # check that the third element in the tuple, i.e. pages is an int
-        self.assertIn(str(337), summaries[0][2])
+        self.assertEqual(summaries[0][2], 337)
         # check that the first book in the search has 337 pages
 
 
