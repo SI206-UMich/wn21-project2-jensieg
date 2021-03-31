@@ -142,13 +142,14 @@ def write_csv(data, filename):
 
     This function should not return anything.
     """
-    filename = open('funcfile.csv', 'w') #idk about this line 
-    filename.write('Book Title,Author Name')
-    filename.write('\n')
+    outfile = open('filename', 'w') #idk about this line 
+    outfile.write('Book Title,Author Name')
+    outfile.write('\n')
     for d in data:
         row_string = '{},{}.format(d[0],d[1])'
-        filename.write(row_string)
-        filename.write('\n')
+        outfile.write(row_string)
+        outfile.write('\n')
+    outfile.close()
 
 def extra_credit(filepath):
     """
@@ -217,17 +218,18 @@ class TestCases(unittest.TestCase):
 
     def test_summarize_best_books(self):
         # call summarize_best_books and save it to a variable
-
+        summaries = summarize_best_books("best_books_2020.htm")
         # check that we have the right number of best books (20)
-
-            # assert each item in the list of best books is a tuple
-
-            # check that each tuple has a length of 3
-
+        self.assertEqual(len(summaries), 20)
+        # assert each item in the list of best books is a tuple
+        for s in summaries:
+            self.assertIs(type(s), tuple)
+            self.assertEqual(len(s), 3)
+        # check that each tuple has a length of 3
         # check that the first tuple is made up of the following 3 strings:'Fiction', "The Midnight Library", 'https://www.goodreads.com/choiceawards/best-fiction-books-2020'
-
+        self.assertEqual(summaries[0], ('Fiction', "The Midnight Library", 'https://www.goodreads.com/choiceawards/best-fiction-books-2020'))
         # check that the last tuple is made up of the following 3 strings: 'Picture Books', 'Antiracist Baby', 'https://www.goodreads.com/choiceawards/best-picture-books-2020'
-        pass
+        self.assertEqual(summaries[-1],('Picture Books', 'Antiracist Baby', 'https://www.goodreads.com/choiceawards/best-picture-books-2020'))
 
     def test_write_csv(self):
         # call get_titles_from_search_results on search_results.htm and save the result to a variable
