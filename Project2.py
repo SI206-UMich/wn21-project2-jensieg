@@ -106,17 +106,18 @@ def summarize_best_books(filepath):
     data = fhand.read()
     fhand.close()
     soup = BeautifulSoup(data, 'lxml')
-    categories = soup.find_all('h4', class_ = "category_copy")
-    urls = soup.find_all('a')
+    categories = soup.find_all('h4', class_ = "category__copy")
+    urls = soup.find_all('div', class_ ="category clearFix")
     titles = soup.find_all('img', class_ = 'category__winnerImage')
     for title in titles:
         lst3.append(title.get('alt'))
     for u in urls:
-        url = u.get('href')
-        if url.startswith('https://www.goodreads.com/genres/'):
-            lst2.append(url)
+        url = u.find('a')
+        site = url.get('href')
+        lst2.append(site)
     for c in categories:
-        lst.append(c.text)
+        cats = c.text
+        lst.append(cats.strip('\n'))
     for i in range(len(lst)):
         final.append((lst[i], lst3[i], lst2[i]))
     return final
@@ -142,13 +143,11 @@ def write_csv(data, filename):
 
     This function should not return anything.
     """
-    outfile = open('filename', 'w') #idk about this line 
-    outfile.write('Book Title,Author Name')
-    outfile.write('\n')
+    outfile = open(filename, 'w') #idk about this line 
+    writer = csv.writer(outfile, delimiter = ',')
+    writer.writerow(['Book Title,Author Name'])
     for d in data:
-        row_string = '{},{}.format(d[0],d[1])'
-        outfile.write(row_string)
-        outfile.write('\n')
+        writer.writerow(d)
     outfile.close()
 
 def extra_credit(filepath):
@@ -235,17 +234,21 @@ class TestCases(unittest.TestCase):
         # call get_titles_from_search_results on search_results.htm and save the result to a variable
         titles = get_titles_from_search_results('search_results.htm')
         # call write csv on the variable you saved and 'test.csv'
-        full_csv = write_csv(titles, 'test.csv')
+        write_csv(titles, 'test.csv')
         # read in the csv that you wrote (create a variable csv_lines - a list containing all the lines in the csv you just wrote to above)
-        csv_lines = full_csv.readlines()
+        with open('test.csv', 'r') as f:
+            reads = csv.reader(f)
+            csv_lines = []
+            for r in reads:
+                csv_lines.append(r)
         # check that there are 21 lines in the csv
         self.assertEqual(len(csv_lines), 21)
         # check that the header row is correct
-        self.assertEqual(csv_lines[0], 'Book Title,Author Name')
+        self.assertEqual(csv_lines[0], ['Book Title,Author Name'])
         # check that the next row is 'Harry Potter and the Deathly Hallows (Harry Potter, #7)', 'J.K. Rowling'
-        self.assertEqual(csv_lines[1], 'Harry Potter and the Deathly Hallows (Harry Potter, #7)', 'J.K. Rowling')
+        self.assertEqual(csv_lines[1], ['Harry Potter and the Deathly Hallows (Harry Potter, #7)', 'J.K. Rowling'])
         # check that the last row is 'Harry Potter: The Prequel (Harry Potter, #0.5)', 'J.K. Rowling'
-        self.assertEqual(csv_lines[-1],'Harry Potter: The Prequel (Harry Potter, #0.5)', 'J.K. Rowling')
+        self.assertEqual(csv_lines[-1],['Harry Potter: The Prequel (Harry Potter, #0.5)', 'J.K. Rowling'])
 
 
 if __name__ == '__main__':
